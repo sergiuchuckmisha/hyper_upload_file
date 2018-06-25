@@ -13,6 +13,9 @@ use hyper::rt::{self, Future, Stream};
 use hyper::body::Body;
 use self::http::status::StatusCode;
 use super::read_from_path;
+use super::visit_dirs::visit_dirs;
+use super::config::CLIENT_TEMPORARY_FOLDER_PATH;
+use super::config::TEMPORARY_FOLDER_PATH;
 
 static NOTFOUND: &[u8] = b"Not Found";
 
@@ -20,6 +23,10 @@ fn get_url() -> hyper::Uri {
     "http://127.0.0.1:3000/upload_file".parse::<hyper::Uri>().unwrap()
 }
 
+/**
+code from
+https://github.com/hyperium/hyper/blob/master/examples/client.rs
+*/
 pub fn push_request(req: Request<Body>) -> impl Future<Item=(), Error=()> {
     let client = Client::new();
 
@@ -50,13 +57,17 @@ pub fn push_request(req: Request<Body>) -> impl Future<Item=(), Error=()> {
         })
 }
 
-pub fn make_request_from_file_path<P: AsRef<Path>>(uri: hyper::Uri, file_path: P) -> Request<Body> {
+pub fn fetch_request(req: Request<Body>) {
+    rt::run(push_request(req));
+}
+
+pub fn make_request_from_file_path<P: AsRef<Path>>(file_path: P) -> Request<Body> {
     Request::builder()
-        .uri(uri)
-        .header("filename", file_path.as_ref().as_os_str().to_str().unwrap())
+        .uri(get_url())
+        .header("filename", file_path.as_ref().file_name().unwrap().to_str().unwrap())
         .method(Method::POST)
 //        .body(Body::from("qweqwe"))
-        .body(Body::from(read_from_path(".gitignore").unwrap()))
+        .body(Body::from(read_from_path(file_path).unwrap()))
         .unwrap()
 }
 
@@ -68,7 +79,7 @@ mod tests {
     use super::*;
 
     # [test]
-    fn test_push_request(){
+    fn test_fetch_request(){
         let mut request_builder = Request::builder();
         let req = request_builder.uri(get_url())
             .header("filename", "qq")
@@ -77,11 +88,26 @@ mod tests {
             .unwrap()
         ;
 
-        rt::run(push_request(req));
+        fetch_request(req);
     }
 
     # [test]
     fn test_make_request_from_file(){
-        rt::run(push_request(make_request_from_file_path(get_url(), ".gitignore")));
+        fetch_request(make_request_from_file_path(".gitignore"));
+        fetch_request(make_request_from_file_path("README.md"));
+    }
+
+    /**idea of the test is to find all files in certain dir and upload them to the server*/
+    #[test]
+    fn test_upload_folder() {
+        //1st: write down all files's pathes
+        //use code
+        //https://doc.rust-lang.org/std/fs/fn.read_dir.html
+
+        visit_dirs(TEMPORARY_FOLDER_PATH, &|ref entry| {
+            println!("{:?}", entry.path());
+            fetch_request(make_request_from_file_path(entry.path()));
+
+        });
     }
 }
