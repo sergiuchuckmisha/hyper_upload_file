@@ -15,18 +15,11 @@ pub mod visit_dirs;
 use code from
 https://doc.rust-lang.org/beta/rust-by-example/std_misc/file/open.html
 */
-pub fn read_from_file<P1: AsRef<Path>, P2: AsRef<Path>>(file_path: P1, folder_path: P2) -> Result<String>
+//pub fn read_from_file<P1: AsRef<Path>, P2: AsRef<Path>>(file_path: P1, folder_path: P2) -> Result<String>
+pub fn read_from_path<P: AsRef<Path>>(file_path: P) -> Result<String>//todo read not String but bytes
 {
-    // Create a path to the desired file
-//    let path = Path::new("lorem_ipsum.txt");
-//    let file_name_2 = format!("{}{}", folder_path, file_path);//todo get rid of extra variable
-    let file_name_2 = folder_path.as_ref().as_os_str().to_os_string().into_string().unwrap() + &file_path.as_ref().as_os_str().to_os_string().into_string().unwrap();//todo get rid of extra variable
-    let path = Path::new(&file_name_2);
-
-//    let display = path.display();
-
     // Open the path in read-only mode, returns `io::Result<File>`
-    let mut file: File = match File::open(&path) {
+    let mut file: File = match File::open(&file_path) {
         // The `description` method of `io::Error` returns a string that
         // describes the error
         Err(why) => return Err(why),
@@ -43,7 +36,15 @@ pub fn read_from_file<P1: AsRef<Path>, P2: AsRef<Path>>(file_path: P1, folder_pa
     // `file` goes out of scope, and the "hello.txt" file gets closed
 }
 
-pub fn make_path_from_file_name_and_directory_path<P1: AsRef<Path>, P2: AsRef<Path>>(file_name: P1, folder_path: P2) -> PathBuf {
+pub fn read_from_file_in_folder<P1: AsRef<Path>, P2: AsRef<Path>>(file_name: P1, folder_path: P2) -> Result<String>
+{
+    // Create a path to the desired file
+    let file_path = folder_path.as_ref().as_os_str().to_os_string().into_string().unwrap() + &file_name.as_ref().as_os_str().to_os_string().into_string().unwrap();//todo get rid of extra variable
+//    let path = Path::new(&file_path);
+    read_from_path(Path::new(&file_path))
+}
+
+pub fn make_path_from_file_name_and_folder_path<P1: AsRef<Path>, P2: AsRef<Path>>(file_name: P1, folder_path: P2) -> PathBuf {
     let mut pathBuf = PathBuf::new();
     pathBuf.push(folder_path);
     pathBuf.push(file_name);
@@ -94,21 +95,21 @@ mod tests {
 
     #[test]
     fn test_write() {
-        write_to_file(make_path_from_file_name_and_directory_path("qwerty.txt", TEMPORARY_FOLDER_PATH), "qwerty");
+        write_to_file(make_path_from_file_name_and_folder_path("qwerty.txt", TEMPORARY_FOLDER_PATH), "qwerty");
     }
 
 
     #[test]
     fn test_read() {
         init(TEMPORARY_FOLDER_PATH);
-        write_to_file(make_path_from_file_name_and_directory_path("qwerty.txt", TEMPORARY_FOLDER_PATH), "qwerty");
-        assert_eq!("qwerty", read_from_file("qwerty.txt", TEMPORARY_FOLDER_PATH).unwrap());
+        write_to_file(make_path_from_file_name_and_folder_path("qwerty.txt", TEMPORARY_FOLDER_PATH), "qwerty");
+        assert_eq!("qwerty", read_from_file_in_folder("qwerty.txt", TEMPORARY_FOLDER_PATH).unwrap());
     }
 
     #[test]
     #[should_panic]
     fn test_read_negative() {
         init(TEMPORARY_FOLDER_PATH);
-        assert_eq!("qwerty", read_from_file("qwerty2.txt", TEMPORARY_FOLDER_PATH).unwrap());
+        assert_eq!("qwerty", read_from_file_in_folder("qwerty2.txt", TEMPORARY_FOLDER_PATH).unwrap());
     }
 }

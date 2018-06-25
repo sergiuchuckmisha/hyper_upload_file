@@ -64,7 +64,7 @@ fn echo(req: Request<Body>) -> BoxFut {
                 println!("req.headers.get(\"filename\"):{:?}", filename);
                 let file_write_result = req.into_body().concat2().map(move |chunk| {
                     let body = chunk.iter().cloned().collect::<Vec<u8>>();
-                    write_to_file(make_path_from_file_name_and_directory_path(filename, SERVER_TEMPORARY_FOLDER_PATH), &body);//todo handle possible errors
+                    write_to_file(make_path_from_file_name_and_folder_path(filename, SERVER_TEMPORARY_FOLDER_PATH), &body);//todo handle possible errors
                     *response.body_mut() = Body::from(SUCCESS);
                     response
                 });

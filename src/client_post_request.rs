@@ -6,48 +6,22 @@ extern crate http;
 extern crate futures;
 
 use std::io::{self, Write};
+use std::path::Path;
 
 use hyper::{Client, Method, Request, Response};
 use hyper::rt::{self, Future, Stream};
 use hyper::body::Body;
 use self::http::status::StatusCode;
+use super::read_from_path;
 
 static NOTFOUND: &[u8] = b"Not Found";
-
-pub fn post_request(body: Body, uri: hyper::Uri) {
-
-
-
-    // Run the runtime with the future trying to fetch and print this URL.
-    //
-    // Note that in more complicated use cases, the runtime should probably
-    // run on its own, and futures should just be spawned into it.
-//    rt::run(fetch_url(url));
-    rt::run(fetch_url(body, uri));
-}
 
 fn get_url() -> hyper::Uri {
     "http://127.0.0.1:3000/upload_file".parse::<hyper::Uri>().unwrap()
 }
 
-pub fn fetch_url(body: Body, url: hyper::Uri) -> impl Future<Item=(), Error=()> {
+pub fn push_request(req: Request<Body>) -> impl Future<Item=(), Error=()> {
     let client = Client::new();
-
-    let mut request_builder = Request::builder();
-    let req = request_builder.uri(url)
-        .header("filename", "qq")
-        .method(Method::POST)
-        .body(Body::from("qweqwe"))
-        .unwrap()
-    ;
-//    let mut req = Request::new(Body::from("qwe"));
-//    let mut req = Request::new(body);
-//    let mut req = Request::new(Body::wrap_stream(stream));
-//    *req.method_mut() = Method::POST;
-//    *req.uri_mut() = url;
-//    *req.headers_mut() =
-//    *req.uri_mut() = get_url();
-//    *req.body_mut() = Body::from("rty");
 
     client
         // Fetch the url...
@@ -76,6 +50,16 @@ pub fn fetch_url(body: Body, url: hyper::Uri) -> impl Future<Item=(), Error=()> 
         })
 }
 
+pub fn make_request_from_file_path<P: AsRef<Path>>(uri: hyper::Uri, file_path: P) -> Request<Body> {
+    Request::builder()
+        .uri(uri)
+        .header("filename", file_path.as_ref().as_os_str().to_str().unwrap())
+        .method(Method::POST)
+//        .body(Body::from("qweqwe"))
+        .body(Body::from(read_from_path(".gitignore").unwrap()))
+        .unwrap()
+}
+
 type ResponseFuture = Box<Future<Item=Response<Body>, Error=io::Error> + Send>;
 
 
@@ -84,7 +68,20 @@ mod tests {
     use super::*;
 
     # [test]
-    fn test_fetch_url(){
-        rt::run(fetch_url(Body::empty(), get_url()));
+    fn test_push_request(){
+        let mut request_builder = Request::builder();
+        let req = request_builder.uri(get_url())
+            .header("filename", "qq")
+            .method(Method::POST)
+            .body(Body::from("qweqwe"))
+            .unwrap()
+        ;
+
+        rt::run(push_request(req));
+    }
+
+    # [test]
+    fn test_make_request_from_file(){
+        rt::run(push_request(make_request_from_file_path(get_url(), ".gitignore")));
     }
 }
