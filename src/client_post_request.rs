@@ -7,10 +7,12 @@ use hyper::{Client, Method, Request};
 use hyper::rt::{self, Future, Stream};
 use hyper::body::Body;
 use super::read_from_path;
+use config::*;
 
 
 fn get_url() -> hyper::Uri {
-    "http://127.0.0.1:3000/upload_file".parse::<hyper::Uri>().unwrap()
+//    "http://127.0.0.1:3000/upload_file".parse::<hyper::Uri>().unwrap()
+    format!("{}{}{}", SERVER_ADDRESS_PREFIX, SERVER_ADDRESS, UPLOAD_FILE_METHOD).parse::<hyper::Uri>().unwrap()
 }
 
 /**

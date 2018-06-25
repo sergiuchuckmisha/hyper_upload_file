@@ -16,6 +16,14 @@ pub const SERVER_TEMPORARY_FOLDER_PATH: &str = "./tmp_server/";
 
 
 
-/**port for local tests*/
-pub const PORT: &str = "3333";
-pub const SERVER_ADDRESS: &str = "http://127.0.0.1";
+/**expected format is "127.0.0.1:3000"
+without http(s)://
+*/
+pub const SERVER_ADDRESS: &str = "127.0.0.1:3000";
+
+/**either https:// or http://
+atm only http:// is supported
+*/
+pub const SERVER_ADDRESS_PREFIX: &str = "http://";
+
+pub const UPLOAD_FILE_METHOD: &str = "/upload_file";

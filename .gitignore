@@ -13,3 +13,5 @@ Cargo.lock
 /.idea/*
 
 /tmp/*
+/tmp_client/*
+/tmp_server/*

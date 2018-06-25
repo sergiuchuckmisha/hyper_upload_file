@@ -47,7 +47,7 @@ fn echo(req: Request<Body>) -> BoxFut {
         }
 
         // Simply echo the body back to the client.
-        (&Method::POST, "/upload_file") => {
+        (&Method::POST, UPLOAD_FILE_METHOD) => {
 
             if req.headers().get("filename").is_none() {
                 *response.body_mut() = Body::from(MISSING);
@@ -127,7 +127,8 @@ fn echo(req: Request<Body>) -> BoxFut {
 }
 
 fn main() {
-    let addr = ([127, 0, 0, 1], 3000).into();
+//    let addr = ([127, 0, 0, 1], 3000).into();
+    let addr = "127.0.0.1:3000".parse().unwrap();
 
     let server = Server::bind(&addr)
         .serve(|| service_fn(echo))
