@@ -24,9 +24,8 @@ pub fn visit_dirs<P: AsRef<Path>>(dir_path: P, cb: &Fn(&DirEntry)) -> io::Result
 
 #[cfg(test)]
 mod tests {
-    use super::Path;
     use super::visit_dirs;
-    use super::super::TEMPORARY_FOLDER_PATH;
+    use super::super::super::TEMPORARY_FOLDER_PATH;
 
     #[test]
     fn test_visit_dirs_print_hw() {

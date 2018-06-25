@@ -1,15 +1,11 @@
-#![feature(proc_macro, generators)]
 
-#[macro_use] extern crate futures_await;
+/**
+basicaly use code from
+https://github.com/hyperium/hyper/blob/master/examples/echo.rs
+*/
 extern crate futures;
 extern crate hyper;
-extern crate tokio_io;
-extern crate tokio_fs;
-extern crate tokio_core;
 
-#[macro_use] extern crate failure;
-
-use tokio_core::reactor::Core;
 
 use futures::future;
 use hyper::rt::{Future, Stream};
@@ -20,7 +16,7 @@ mod config;
 mod files_io_api;
 mod client_post_request;
 use files_io_api::*;
-use config::SERVER_TEMPORARY_FOLDER_PATH;
+use config::*;
 
 
 /// We need to return different futures depending on the route matched,
@@ -33,8 +29,6 @@ type BoxFut = Box<Future<Item=Response<Body>, Error=hyper::Error> + Send>;
 
 static MISSING: &[u8] = b"Missing header \"filename\"";
 static SUCCESS: &[u8] = b"Success";
-static NOTFOUND: &[u8] = b"Not Found";
-static INDEX: &str = "examples/send_file_index.html";
 
 /// This is our service handler. It receives a Request, routes on its
 /// path, and returns a Future of a Response.

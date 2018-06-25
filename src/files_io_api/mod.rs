@@ -1,7 +1,6 @@
 
 /**idea of module is to provide ability to read/write files in tmp directory in project folder*/
 
-use config::TEMPORARY_FOLDER_PATH;
 
 use std::fs::{File, remove_dir_all, create_dir_all};
 use std::io::prelude::*;
@@ -48,10 +47,10 @@ pub fn read_from_file_in_folder<P1: AsRef<Path>, P2: AsRef<Path>>(file_name: P1,
 }
 
 pub fn make_path_from_file_name_and_folder_path<P1: AsRef<Path>, P2: AsRef<Path>>(file_name: P1, folder_path: P2) -> PathBuf {
-    let mut pathBuf = PathBuf::new();
-    pathBuf.push(folder_path);
-    pathBuf.push(file_name);
-    pathBuf
+    let mut path_buf = PathBuf::new();
+    path_buf.push(folder_path);
+    path_buf.push(file_name);
+    path_buf
 //    &Path::new(&(folder_path.as_ref().as_os_str().to_os_string().into_string().unwrap() + &file_name.as_ref().as_os_str().to_os_string().into_string().unwrap()))
 }
 
@@ -89,6 +88,7 @@ pub fn init<P: AsRef<Path>>(folder_path: P) -> Result<()>
 
 #[cfg(test)]
 mod tests {
+    use config::TEMPORARY_FOLDER_PATH;
     use super::*;
 
     #[test]

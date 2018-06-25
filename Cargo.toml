@@ -6,16 +6,4 @@ authors = ["sergiuchuckmisha <caga3@inbox.ru>"]
 [dependencies]
 
 hyper = "*"
-hyper-tls = "0.2.1"
-tokio = "*"
-tokio-core = "0.1.17"
-tokio-fs = "0.1.1"
-
-#![feature(extern_prelude)]
-tokio-io = "0.1.7"
 futures = "*"
-http = "*"
-
-#futures = "0.2.1"
-futures-await = "0.1.1"
-failure = "0.1.1"
