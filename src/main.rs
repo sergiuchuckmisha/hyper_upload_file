@@ -20,6 +20,7 @@ mod config;
 mod files_io_api;
 mod client_post_request;
 use files_io_api::*;
+use config::SERVER_TEMPORARY_FOLDER_PATH;
 
 
 /// We need to return different futures depending on the route matched,
@@ -63,7 +64,7 @@ fn echo(req: Request<Body>) -> BoxFut {
                 println!("req.headers.get(\"filename\"):{:?}", filename);
                 let file_write_result = req.into_body().concat2().map(move |chunk| {
                     let body = chunk.iter().cloned().collect::<Vec<u8>>();
-                    write_to_file(filename, &body);
+                    write_to_file(make_path_from_file_name_and_directory_path(filename, SERVER_TEMPORARY_FOLDER_PATH), &body);//todo handle possible errors
                     *response.body_mut() = Body::from(SUCCESS);
                     response
                 });
