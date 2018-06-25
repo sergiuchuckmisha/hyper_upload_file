@@ -12,7 +12,7 @@ use config::*;
 
 fn get_url() -> hyper::Uri {
 //    "http://127.0.0.1:3000/upload_file".parse::<hyper::Uri>().unwrap()
-    format!("{}{}{}", SERVER_ADDRESS_PREFIX, SERVER_ADDRESS, UPLOAD_FILE_METHOD).parse::<hyper::Uri>().unwrap()
+    format!("{}{}{}", PROTOCOL, SERVER_ADDRESS, UPLOAD_FILE_METHOD).parse::<hyper::Uri>().unwrap()
 }
 
 /**

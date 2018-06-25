@@ -8,7 +8,7 @@ pub const TEMPORARY_FOLDER_PATH: &str = "./tmp/";
 
 //slash in the end is required
 //used in tests to store client files
-pub const CLIENT_TEMPORARY_FOLDER_PATH: &str = "tmp_client/";
+pub const CLIENT_TEMPORARY_FOLDER_PATH: &str = "./tmp_client/";
 
 //slash in the end is required
 //used in tests to store server files
@@ -24,6 +24,6 @@ pub const SERVER_ADDRESS: &str = "127.0.0.1:3000";
 /**either https:// or http://
 atm only http:// is supported
 */
-pub const SERVER_ADDRESS_PREFIX: &str = "http://";
+pub const PROTOCOL: &str = "http://";//todo may be use enum http::Uri::Protocol? Does it worth to create additional dependency for this enum using?
 
 pub const UPLOAD_FILE_METHOD: &str = "/upload_file";
